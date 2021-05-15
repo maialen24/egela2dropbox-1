@@ -145,3 +145,21 @@ class Dropbox:
         status = erantzuna.status_code
         print("Status: ")
         print(str(status))
+
+    def download_pdf(self, file_path):
+        print("/download_links " + file_path)
+        uria = 'https://api.dropboxapi.com/2/files/get_temporary_link'
+        headers = {'Authorization': 'Bearer ' + self._access_token, 'Content-Type': 'application/json'}
+        data = {"path": file_path}
+        data_encoded = json.dumps(data)
+        erantzuna = requests.post(uria, headers=headers, data=data_encoded, allow_redirects=False)
+        response = json.loads(erantzuna.content)
+        status = erantzuna.status_code
+        edukia = erantzuna.text
+        url = response["link"]
+        print(url)
+        webbrowser.open(url)
+        print("Status: ")
+        print(str(status))
+        print("Edukia: ")
+        print(edukia)

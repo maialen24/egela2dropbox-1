@@ -5,8 +5,7 @@ import urllib
 import urllib.parse
 import time
 import helper
-from urllib.request import Request
-from urllib.request import urlopen
+
 
 class eGela:
     _login = 0
@@ -47,12 +46,8 @@ class eGela:
             print(goiburua + ": " + erantzuna.headers[goiburua])
             if goiburua == "Set-Cookie":
                 cookiea = erantzuna.headers[goiburua].split(";")[0]
-                print("Cookie: ")
-                print(cookiea)
             elif goiburua == "Location":
                 location = erantzuna.headers[goiburua]
-                print("Location: ")
-                print(location)
         self._cookiea = cookiea
         edukia = erantzuna.content
         print("Edukia: ")
@@ -79,12 +74,8 @@ class eGela:
             print(goiburua + ": " + erantzuna.headers[goiburua])
             if goiburua == "Set-Cookie":
                 cookiea = erantzuna.headers[goiburua].split(";")[0]
-                print("Cookie: ")
-                print(cookiea)
             elif goiburua == "Location":
                 location = erantzuna.headers[goiburua]
-                print("Location: ")
-                print(location)
         edukia = erantzuna.content
         print("Edukia: ")
         print(edukia)
@@ -98,7 +89,6 @@ class eGela:
         metodoa = 'POST'
         print("Metodoa: ")
         print(metodoa)
-        print(location)
         uria = location
         goiburuak = {'Host': 'egela.ehu.eus', 'Content-Type': 'application/x-www-form-urlencoded',
                      'Content-Length': str(len(data)), 'Cookie': self._cookiea}
@@ -126,6 +116,7 @@ class eGela:
             self._root.destroy()
         else:
             messagebox.showinfo("Alert Message", "Login incorrect!")
+            print("\n")
             print("Login incorrect!")
 
     def get_pdf_refs(self):
@@ -176,6 +167,10 @@ class eGela:
                         if status == 303:
                             pdf_uria = erantzuna.headers['Location']
                             erantzuna = requests.get(pdf_uria, headers=headers, allow_redirects=False)
+                            print(metodoa + " " + uria)
+                            kodea = erantzuna.status_code
+                            deskribapena = erantzuna.reason
+                            print(str(kodea) + " " + deskribapena)
                             pdf_link = pdf_uria.split("mod_resource/content/")[1].split("/")[1].replace("%20", "_")
                             pdf_izena = pdf_link.split('/')[-1]
                             self._refs.append({'link': pdf_link, 'pdf_name': pdf_izena})

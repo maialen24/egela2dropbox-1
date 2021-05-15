@@ -95,7 +95,7 @@ def create_folder():
     popup = tk.Toplevel(newroot)
     popup.geometry('200x100')
     popup.title('Dropbox')
-    # popup.iconbitmap('./favicon.ico')
+    popup.iconbitmap('./favicon.ico')
     helper.center(popup)
 
     login_frame = tk.Frame(popup, padx=10, pady=10)
@@ -145,6 +145,30 @@ def on_double_clicking2(event):
     var.set(dropbox._path)
     dropbox.list_folder(msg_listbox2)
 
+
+def download():
+    popup, progress_var, progress_bar = helper.progress("download_link", "Downloading...")
+    progress = 0
+    progress_var.set(progress)
+    progress_bar.update()
+    progress_step = float(100.0 / len(selected_items2))
+
+    for each in selected_items2:
+        if dropbox._path == "/":
+            path = "/" + dropbox._files[each]['name']
+        else:
+            path = dropbox._path + "/" + dropbox._files[each]['name']
+        dropbox.download_pdf(path)
+
+        progress += progress_step
+        progress_var.set(progress)
+        progress_bar.update()
+        newroot.update()
+
+        time.sleep(0.1)
+
+    popup.destroy()
+    dropbox.list_folder(msg_listbox2)
 
 # Login eGela
 root = tk.Tk()
@@ -248,6 +272,8 @@ button2 = tk.Button(frame2, borderwidth=4, text="Delete", width=10, pady=8, comm
 button2.pack(padx=2, pady=2)
 button3 = tk.Button(frame2, borderwidth=4, text="Create folder", width=10, pady=8, command=create_folder)
 button3.pack(padx=2, pady=2)
+button4 = tk.Button(frame2, borderwidth=4, text="Download", width=10, pady=8, command=download)
+button4.pack(padx=2, pady=2)
 frame2.grid(column=3, row=1, ipadx=10, ipady=10)
 
 for each in pdfs:
