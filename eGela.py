@@ -9,7 +9,7 @@ import helper
 
 class eGela:
     _login = 0
-    _cookiea = ""
+    _cookiea = "MoodleSessionegela=ftvembt2rmeabfurj204s0qf50629403"
     _refs = []
     _root = None
 
@@ -48,7 +48,7 @@ class eGela:
                 cookiea = erantzuna.headers[goiburua].split(";")[0]
             elif goiburua == "Location":
                 location = erantzuna.headers[goiburua]
-        self._cookiea = cookiea
+        # self._cookiea = cookiea
         edukia = erantzuna.content
         print("Edukia: ")
         print(edukia)
@@ -64,7 +64,7 @@ class eGela:
         print(metodoa)
         uria = location
         goiburuak = {'Host': uria.split('/')[2],
-                     'Cookie': cookiea}
+                     'Cookie': self._cookiea}
         erantzuna = requests.request(metodoa, uria, headers=goiburuak, allow_redirects=False)
         print(metodoa + " " + uria)
         kodea = erantzuna.status_code
@@ -79,6 +79,7 @@ class eGela:
         edukia = erantzuna.content
         print("Edukia: ")
         print(edukia)
+        # self._cookiea=cookiea
 
         progress = 66
         progress_var.set(progress)
@@ -104,12 +105,41 @@ class eGela:
         edukia = erantzuna.content
         print("Edukia: ")
         print(edukia)
+        print(self._cookiea)
 
         progress = 100
         progress_var.set(progress)
         progress_bar.update()
         time.sleep(0.1)
         popup.destroy()
+
+        if 'Location' in erantzuna.headers:
+            uria = erantzuna.headers['Location']
+            metodoa = 'POST'
+            print("Metodoa: ")
+            print(metodoa)
+            # uria = location
+            goiburuak = {'Host': 'egela.ehu.eus', 'Content-Type': 'application/x-www-form-urlencoded',
+                         'Content-Length': str(len(data)), 'Cookie': self._cookiea}
+            data_encoded = urllib.parse.urlencode(data)
+            goiburuak['Content-Length'] = str(len(data_encoded))
+            erantzuna = requests.request(metodoa, uria, data=data_encoded, headers=goiburuak, allow_redirects=False)
+            print(metodoa + " " + uria)
+            kodea = erantzuna.status_code
+            deskribapena = erantzuna.reason
+            print(str(kodea) + " " + deskribapena)
+            for goiburua in erantzuna.headers:
+                print(goiburua + ": " + erantzuna.headers[goiburua])
+            edukia = erantzuna.content
+            print("Edukia: ")
+            print(edukia)
+            print(self._cookiea)
+
+            progress = 100
+            progress_var.set(progress)
+            progress_bar.update()
+            time.sleep(0.1)
+            popup.destroy()
 
         if erantzuna.status_code == 200:
             self._login = 1
@@ -131,20 +161,28 @@ class eGela:
         section = 1
         pdf = []
         status = 0
+        pdf_kop = 0
+        kop = 1
         print("Metodoa: ")
         print(metodoa)
-        while status != 404:
+        print(self._cookiea)
+        while status != 404 and pdf_kop != kop:
             goiburuak = {'Host': 'egela.ehu.eus', 'Content-Type': 'application/x-www-form-urlencoded',
                          'Content-Length': str(len(data)), 'Cookie': self._cookiea}
-            uria = "https://egela.ehu.eus/course/view.php?id=42336&section=" + str(section)
+            uria = "https://egela.ehu.eus/course/view.php?id=48048#section-" + str(section)
+            # uria = "https://egela.ehu.eus/course/view.php?id=48048"
+            # uria = "https://egela.ehu.eus/course/view.php?id=48048"
+            print(uria)
             erantzuna = requests.request(metodoa, uria, data=data, headers=goiburuak, allow_redirects=False)
             edukia = erantzuna.content
             status = erantzuna.status_code
             print(status)
+
             if erantzuna.status_code == 200:
-                print("Web Sistemak")
+                print("Asignaturas")
                 soup = BeautifulSoup(erantzuna.content, "html.parser")
                 pdf_results = soup.find_all("div", {"class": "activityinstance"})
+                # pdf_results = soup.find_all('a', {'class': 'aalink'})
                 kop = str(pdf_results).count("pdf")
                 print("PDF kop: " + str(kop))
 
@@ -157,6 +195,7 @@ class eGela:
                     print("\n##### PDF-a bat aurkitu da! #####")
                     pdf_link = each.parent['href']
                     uria = pdf_link
+                    pdf_kop = pdf_kop + 1
                     if pdf.__contains__(uria):
                         print("PDF hau " + uria + " aurkituta dago jada!")
                     else:
@@ -174,16 +213,30 @@ class eGela:
                             pdf_link = pdf_uria.split("mod_resource/content/")[1].split("/")[1].replace("%20", "_")
                             pdf_izena = pdf_link.split('/')[-1]
                             self._refs.append({'link': pdf_uria, 'pdf_name': pdf_izena})
+
+                        elif 'resource' in uria:
+                            print(metodoa + " " + uria)
+                            kodea = erantzuna.status_code
+                            deskribapena = erantzuna.reason
+                            print(str(kodea) + " " + deskribapena)
+                            pdf_link = pdf_uria.split("mod_resource/content/")[1].split("/")[1].replace("%20", "_")
+                            pdf_izena = pdf_link.split('/')[-1]
+                            self._refs.append({'link': pdf_uria, 'pdf_name': pdf_izena})
                         else:
                             print(metodoa + " " + uria)
                             kodea = erantzuna.status_code
                             deskribapena = erantzuna.reason
                             print(str(kodea) + " " + deskribapena)
                             edukia = erantzuna.content
+                            # print(edukia)
                             status = erantzuna.status_code
                             soup2 = BeautifulSoup(edukia, 'html.parser')
-                            div_pdf = soup2.find('div', {'class': 'resourceworkaround'})
-                            pdf_link = div_pdf.a['href']
+                            div_pdf_elements = soup2.find_all('div', {'class': 'resourceworkaround'})
+                            # print(div_pdf)
+                            for div in div_pdf_elements:
+                                if "href" in str(div):
+                                    pdf_link = div["href"]
+                            # pdf_link = div_pdf.a['href']
                             pdf_izena = pdf_link.split('/')[-1]
                             self._refs.append({'link': pdf_link, 'pdf_name': pdf_izena})
 
