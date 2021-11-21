@@ -9,7 +9,6 @@ import dropbox
 import requests
 from bs4 import BeautifulSoup
 import weasyprint
-
 import Dropbox
 import OptionWindows
 import zeregina4
