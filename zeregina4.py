@@ -1,15 +1,24 @@
 import tkinter as tk
 import os
+from tkinter.ttk import Combobox
+
 import eGela
 import Dropbox
 import helper
 import time
 from tkinter import *
+import funtzioak
+import OptionWindows
+
 
 username = ""
 password = ""
 egela = None
 pdfs = None
+
+
+
+
 
 def make_entry(parent, caption, width=None, **options):
     label = tk.Label(parent, text=caption)
@@ -100,7 +109,7 @@ def create_folder():
     popup = tk.Toplevel(newroot)
     popup.geometry('200x100')
     popup.title('Dropbox')
-    popup.iconbitmap('./favicon.ico')
+#    popup.iconbitmap('./favicon.ico')
     helper.center(popup)
 
     login_frame = tk.Frame(popup, padx=10, pady=10)
@@ -183,7 +192,7 @@ def login_egela():
     global pdfs
     root = tk.Tk()
     root.geometry('250x150')
-    root.iconbitmap('./favicon.ico')
+#    root.iconbitmap('./favicon.ico')
     root.title('Login eGela')
     helper.center(root)
     egela = eGela.eGela(root)
@@ -205,11 +214,12 @@ def login_egela():
     # eGela-ko PDF-etako erreferentziak hartu
     pdfs = egela.get_pdf_refs()
 
+
 # Portada
 root = tk.Tk()
 root.geometry('745x699')
 root.title('Portada')
-root.iconbitmap('./favicon.ico')
+#root.iconbitmap('./favicon.ico')
 helper.center(root)
 login_frame = tk.Frame(root, padx=10, pady=10)
 login_frame.pack(fill=tk.BOTH, expand=True)
@@ -218,12 +228,22 @@ fondo = Label(root, image=image).pack()
 button = tk.Button(login_frame, borderwidth=4, text="Next", width=15, pady=8, command=login_egela)
 button.pack(side=tk.BOTTOM)
 
+
+
+button = tk.Button(login_frame, borderwidth=4, text="Html2Pdf", width=15, pady=8, command=OptionWindows.html2pdfW(root))
+button.pack(side=tk.BOTTOM)
+
+
+
+button = tk.Button(login_frame, borderwidth=4, text="Other web", width=15, pady=8, command=OptionWindows.allFiles(root))
+button.pack(side=tk.BOTTOM)
+
 root.mainloop()
 
 # Login Dropbox
 root = tk.Tk()
 root.geometry('250x100')
-root.iconbitmap('./favicon.ico')
+#root.iconbitmap('./favicon.ico')
 root.title('Login Dropbox')
 helper.center(root)
 
@@ -243,7 +263,7 @@ root.mainloop()
 
 newroot = tk.Tk()
 newroot.geometry("850x400")
-newroot.iconbitmap('./favicon.ico')
+#newroot.iconbitmap('./favicon.ico')
 newroot.title("eGela -> Dropbox")
 helper.center(newroot)
 

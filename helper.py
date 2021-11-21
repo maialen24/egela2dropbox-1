@@ -24,7 +24,7 @@ def progress(tipo, title):
         popup = tk.Toplevel()
     popup.geometry('250x50')
     popup.title(title)
-    popup.iconbitmap('./favicon.ico')
+#    popup.iconbitmap('./favicon.ico')
     center(popup)
 
     label = tk.Label(popup, text=title)
