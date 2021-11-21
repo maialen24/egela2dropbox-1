@@ -4,7 +4,12 @@ import eGela
 import Dropbox
 import helper
 import time
+from tkinter import *
 
+username = ""
+password = ""
+egela = None
+pdfs = None
 
 def make_entry(parent, caption, width=None, **options):
     label = tk.Label(parent, text=caption)
@@ -170,30 +175,50 @@ def download():
     popup.destroy()
     dropbox.list_folder(msg_listbox2)
 
-# Login eGela
-root = tk.Tk()
-root.geometry('250x150')
-root.iconbitmap('./favicon.ico')
-root.title('Login eGela')
-helper.center(root)
-egela = eGela.eGela(root)
+def login_egela():
+    # Login eGela
+    global egela
+    global username
+    global password
+    global pdfs
+    root = tk.Tk()
+    root.geometry('250x150')
+    root.iconbitmap('./favicon.ico')
+    root.title('Login eGela')
+    helper.center(root)
+    egela = eGela.eGela(root)
 
+    login_frame = tk.Frame(root, padx=10, pady=10)
+    login_frame.pack(fill=tk.BOTH, expand=True)
+
+    username = make_entry(login_frame, "Username:", 16)
+    password = make_entry(login_frame, "Password:", 16, show="*")
+    password.bind("<Return>", check_credentials)
+
+    button = tk.Button(login_frame, borderwidth=4, text="Login", width=10, pady=8, command=check_credentials)
+    button.pack(side=tk.BOTTOM)
+
+    root.mainloop()
+
+    if not egela._login:
+        exit()
+    # eGela-ko PDF-etako erreferentziak hartu
+    pdfs = egela.get_pdf_refs()
+
+# Portada
+root = tk.Tk()
+root.geometry('745x699')
+root.title('Portada')
+root.iconbitmap('./favicon.ico')
+helper.center(root)
 login_frame = tk.Frame(root, padx=10, pady=10)
 login_frame.pack(fill=tk.BOTH, expand=True)
-
-username = make_entry(login_frame, "Username:", 16)
-password = make_entry(login_frame, "Password:", 16, show="*")
-password.bind("<Return>", check_credentials)
-
-button = tk.Button(login_frame, borderwidth=4, text="Login", width=10, pady=8, command=check_credentials)
+image = tk.PhotoImage(file='./Portada.png')
+fondo = Label(root, image=image).pack()
+button = tk.Button(login_frame, borderwidth=4, text="Next", width=15, pady=8, command=login_egela)
 button.pack(side=tk.BOTTOM)
 
 root.mainloop()
-
-if not egela._login:
-    exit()
-# eGela-ko PDF-etako erreferentziak hartu
-pdfs = egela.get_pdf_refs()
 
 # Login Dropbox
 root = tk.Tk()
